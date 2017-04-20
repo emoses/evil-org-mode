@@ -74,15 +74,15 @@ FUN function callback"
 ;; open org-mode links in visual selection
 (defun evil-org-generic-open-links (beg end type register yank-handler incog)
   (progn
-    (save-excursion 
+    (save-excursion
       (goto-char beg)
       (catch 'break
         (while t
           (org-next-link)
           ;;; break from outer loop when there are no more
           ;;; org links
-          (when (or 
-                 (not (< (point) end)) 
+          (when (or
+                 (not (< (point) end))
                  (not (null org-link-search-failed)))
             (throw 'break 0))
 
@@ -119,6 +119,18 @@ FUN function callback"
   (evil-org-generic-open-links beg end type register yank-handler t)
 )
 
+(defun evil-org-mode-open-below (count)
+  "Insert below, cleverly adding a heading if applicable"
+  (interactive "p")
+  (evil-org-eol-call 'clever-insert-item)
+  (evil-insert count))
+
+(defun evil-org-mode-open-above (count)
+  "Insert above, inserting a heading"
+  (interactive "p")
+  (evil-org-eol-call 'org-insert-heading)
+  (evil-insert count))
+
 ;; normal state shortcuts
 (evil-define-key 'normal evil-org-mode-map
   "gh" 'outline-up-heading
@@ -136,8 +148,8 @@ FUN function callback"
   "J" 'org-shiftdown
   "K" 'org-shiftup
   "L" 'org-shiftright
-  "o" '(lambda () (interactive) (evil-org-eol-call 'clever-insert-item))
-  "O" '(lambda () (interactive) (evil-org-eol-call 'org-insert-heading))
+  "o" 'evil-org-mode-open-below
+  "O" 'evil-org-mode-open-above
   "$" 'org-end-of-line
   "^" 'org-beginning-of-line
   "<" 'org-metaleft
